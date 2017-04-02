@@ -1,0 +1,17 @@
+AddDefaultCharset UTF-8
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    RewriteCond %{REQUEST_URI} ^system.*
+    RewriteRule ^(.*)$ index.php/$1 [L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L]
+
+   RewriteRule ^$ index.php [L]
+   RewriteCond $1 !^(index\.php|no_cookies\.php|info|uploads|plugins|phpmae|stuff|js|img|css|templates|fonts|font|robots\.txt|favicon\.ico|about\.php)
+   RewriteRule ^(.*)$ index.php/$1 [L] 
+
+</IfModule>
