@@ -10,7 +10,7 @@
 #    https://hub.docker.com/r/laradock/php-fpm/tags/
 #
 
-FROM  perovmpr/php:7.0-apache
+FROM  perovmpr/php:7.0.17-apache
 
 MAINTAINER Mahmoud Zalt <mahmoud@zalt.me>
 
