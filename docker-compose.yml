@@ -8,50 +8,50 @@ services:
         image: tianon/true
         volumes:
             - ./:/var/www/progect
-#
+
 
 
 ### Workspace Utilities Container ###########################
-
-    workspace:
-        build:
-            context: ./docker/workspace
-            args:
-
-                - INSTALL_XDEBUG=false
-                - INSTALL_SNMP=false
-                - INSTALL_SOAP=false
-                - INSTALL_MONGO=false
-                - INSTALL_NODE=false
-                - INSTALL_YARN=false
-                - INSTALL_DRUSH=false
-                - INSTALL_AEROSPIKE_EXTENSION=false
-                - INSTALL_V8JS_EXTENSION=false
-                - COMPOSER_GLOBAL_INSTALL=false
-                - INSTALL_WORKSPACE_SSH=false
-                - INSTALL_LARAVEL_ENVOY=false
-                - INSTALL_DEPLOYER=false
-                - INSTALL_LINUXBREW=false
-                - PUID=1000
-                - PGID=1000
-                - NODE_VERSION=stable
-                - YARN_VERSION=latest
-                - TZ=UTC
-        volumes_from:
-            - applications
-        extra_hosts:
-            # IMPORTANT: Replace with your Docker Host IP (will be appended to /etc/hosts)
-            - "dockerhost:10.0.75.1"
-        ports:
-           - "2222:22"
-        tty: true
+#    workspace:
+#        build:
+#            context: ./docker/workspace
+#            args:
+#
+#                - INSTALL_XDEBUG=false
+#                - INSTALL_SNMP=false
+#                - INSTALL_SOAP=false
+#                - INSTALL_MONGO=false
+#                - INSTALL_NODE=false
+#                - INSTALL_YARN=false
+#                - INSTALL_DRUSH=false
+#                - INSTALL_AEROSPIKE_EXTENSION=false
+#                - INSTALL_V8JS_EXTENSION=false
+#                - COMPOSER_GLOBAL_INSTALL=false
+#                - INSTALL_WORKSPACE_SSH=false
+#                - INSTALL_LARAVEL_ENVOY=false
+#                - INSTALL_DEPLOYER=false
+#                - INSTALL_LINUXBREW=false
+#                - PUID=1000
+#                - PGID=1000
+#                - NODE_VERSION=stable
+#                - YARN_VERSION=latest
+#                - TZ=UTC
+#        volumes_from:
+#            - applications
+#        extra_hosts:
+#            # IMPORTANT: Replace with your Docker Host IP (will be appended to /etc/hosts)
+#            - "dockerhost:10.0.75.1"
+#        ports:
+#           - "2222:22"
+#           - "80:80"
+#        tty: true
 
 ### PHP-FPM Container #######################################
 
-    php-fpm:
+    php-apache:
         build:
 #            context: ./docker/php-fp
-            context: ./docker/php-fpm
+            context: ./docker/php-apache
             args:
                 - INSTALL_OPCACHE=true
                 - INSTALL_SQLSRV=true
@@ -73,10 +73,15 @@ services:
             dockerfile: Dockerfile-70
         volumes_from:
             - applications
-        expose:
-            - "9000"
-        links:
-            - workspace
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - "./log/apache2:/var/log/apache2"
+            - "./log/sits/:/var/log/sits/"
+
+#        links:
+#            - workspace
         extra_hosts:
             # IMPORTANT: Replace with your Docker Host IP (will be appended to /etc/hosts)
             - "dockerhost:10.0.75.1"
@@ -85,22 +90,22 @@ services:
             - PHP_IDE_CONFIG=serverName=laravel
 
 ### Nginx Server Container ##################################
-
-    nginx:
-        build:
-            context: ./docker/nginx
-            args:
-                - PHP_UPSTREAM=php-fpm
-        volumes_from:
-            - applications
-        volumes:
-            - ./logs/nginx/:/var/log/nginx
-            - ./docker/nginx/sites/:/etc/nginx/sites-available
-        ports:
-            - "80:80"
-            - "443:443"
-        links:
-            - php-fpm
+#
+#    nginx:
+#        build:
+#            context: ./docker/nginx
+#            args:
+#                - PHP_UPSTREAM=php-fpm
+#        volumes_from:
+#            - applications
+#        volumes:
+#            - ./logs/nginx/:/var/log/nginx
+#            - ./docker/nginx/sites/:/etc/nginx/sites-available
+#        ports:
+#            - "80:80"
+#            - "443:443"
+#        links:
+#            - php-fpm
 
 
 ### MySQL Container #########################################
